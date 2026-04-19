@@ -1,0 +1,5 @@
+[project]
+name = "telegram-bot-crypto"
+
+[deploy]
+start = "python -m app.main"
