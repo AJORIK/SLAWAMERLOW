@@ -80,4 +80,24 @@ async def plan_choice(call: types.CallbackQuery):
 async def main_menu_handler(message: types.Message):
     user = await get_user(message.from_user.id)
     lang = user.language if user else "RU"
-    await message.answer("Главное меню:", reply_markup=main_menu(lang
+    await message.answer("Главное меню:", reply_markup=main_menu(lang))
+
+@dp.message(Text(startswith="!check"))
+async def check_payment_cmd(message: types.Message):
+    tx_hash = message.text.split()[1]
+    ok = await check_payment(tx_hash)
+    if ok:
+        await message.answer("Платеж подтвержден ✅")
+        try:
+            invite_link = await bot.create_chat_invite_link(PRIVATE_CHANNEL_ID, member_limit=1, expire_date=datetime.datetime.utcnow() + datetime.timedelta(days=30))
+            await bot.send_message(message.from_user.id, f"Ссылка на канал: {invite_link.invite_link}")
+        except Exception as e:
+            await message.answer(f"Ошибка выдачи доступа: {e}")
+    else:
+        await message.answer("Платеж не найден ❌")
+
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
