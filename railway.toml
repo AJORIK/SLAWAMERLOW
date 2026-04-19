@@ -1,5 +1,2 @@
-[project]
-name = "SLAWAMERLOW"
-
 [deploy]
 start = "python -m app.main"
